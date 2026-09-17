@@ -2,8 +2,8 @@ import { useState, type FormEvent } from "react";
 import { useLang } from "@/i18n/LanguageContext";
 import { company } from "@/data/content";
 import { cn } from "@/utils/cn";
-import { Reveal, RevealLines } from "./ui/Reveal";
-import { Arrow, Button, ButtonLink, Kicker, Section } from "./ui/Primitives";
+import { Reveal, RevealLines } from "@/ui/Reveal";
+import { Arrow, Button, ButtonLink, Kicker, Section } from "@/ui/Primitives";
 
 const field =
   "peer w-full border-b border-line bg-transparent py-4 text-base text-paper placeholder-transparent outline-none transition-colors duration-500 focus:border-signal";

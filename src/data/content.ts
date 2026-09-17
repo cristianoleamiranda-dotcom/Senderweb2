@@ -1,27 +1,16 @@
-/**
- * SENDER — Editable site content (ES / EN)
- * ------------------------------------------------------------
- * All real information sourced from https://www.sender.cl/
- * Anything not verifiable is marked with brackets, e.g. "[YEAR]".
- * Replace bracketed placeholders with real data when available.
- */
-
-import heroWide from "@/assets/hero-wide.jpg";
-import heroTall from "@/assets/hero.jpg";
-import capRf from "@/assets/cap-rf.jpg";
-import capBroadcast from "@/assets/cap-broadcast.jpg";
-import capAntennas from "@/assets/cap-antennas.jpg";
-import capTransmission from "@/assets/cap-transmission.jpg";
-import capCritical from "@/assets/cap-critical.jpg";
-import projAm from "@/assets/proj-am.jpg";
-import projStl from "@/assets/proj-stl.jpg";
-import aboutImg from "@/assets/about.jpg";
+import heroWide from "../assets/hero-wide.jpg";
+import heroTall from "../assets/hero.jpg";
+import capRf from "../assets/cap-rf.jpg";
+import capBroadcast from "../assets/cap-broadcast.jpg";
+import capAntennas from "../assets/cap-antennas.jpg";
+import capTransmission from "../assets/cap-transmission.jpg";
+import capCritical from "../assets/cap-critical.jpg";
+import projAm from "../assets/proj-am.jpg";
+import projStl from "../assets/proj-stl.jpg";
+import aboutImg from "../assets/about.jpg";
 
 export type Lang = "es" | "en";
 
-/* ------------------------------------------------------------------ */
-/* Real company contact data — sender.cl                               */
-/* ------------------------------------------------------------------ */
 export const company = {
   name: "Sender",
   tagline: "Engineering the Signal",
@@ -47,9 +36,6 @@ export const images = {
   aboutImg,
 };
 
-/* ------------------------------------------------------------------ */
-/* Types                                                               */
-/* ------------------------------------------------------------------ */
 export interface Capability {
   id: string;
   index: string;
@@ -105,12 +91,8 @@ export interface SiteContent {
   footer: { tagline: string; nav: string; reach: string; channels: string; legal: string; back: string };
 }
 
-/* ------------------------------------------------------------------ */
-/* Content                                                             */
-/* ------------------------------------------------------------------ */
 const es: SiteContent = {
   nav: { solutions: "Soluciones", projects: "Proyectos", technology: "Tecnología", about: "Nosotros", contact: "Contacto", cta: "Contactar" },
-
   hero: {
     kicker: "Ingeniería RF · Radiodifusión · Comunicaciones críticas",
     title: ["ENGINEERING", "THE SIGNAL"],
@@ -120,7 +102,6 @@ const es: SiteContent = {
     scroll: "Scroll to explore",
     meta: ["Santiago, Chile", "20+ años", "AM · FM · HF · VHF · UHF · NAVTEX"],
   },
-
   manifesto: {
     title: ["THE SIGNAL", "MUST GO THROUGH."],
     body: [
@@ -128,7 +109,6 @@ const es: SiteContent = {
       "Diseñamos e implementamos tecnología desarrollada para funcionar donde realmente importa.",
     ],
   },
-
   capabilities: {
     kicker: "03 — Capacidades",
     title: "WHAT WE ENGINEER",
@@ -136,53 +116,37 @@ const es: SiteContent = {
     hover: "Ver área",
     items: [
       {
-        id: "rf-engineering",
-        index: "01",
-        title: "RF ENGINEERING",
+        id: "rf-engineering", index: "01", title: "RF ENGINEERING",
         description: "Ingeniería y desarrollo de soluciones RF.",
         specs: ["Amplificación clase D", "Modulación PWM", "Módulos y circuitos RF", "Condensadores de alta potencia", "Unidades de sintonía ATU"],
-        image: capRf,
-        alt: "Módulo amplificador RF de estado sólido con transistores y bobinas de cobre",
+        image: capRf, alt: "Módulo amplificador RF de estado sólido con transistores y bobinas de cobre",
       },
       {
-        id: "broadcast",
-        index: "02",
-        title: "BROADCAST",
+        id: "broadcast", index: "02", title: "BROADCAST",
         description: "Soluciones para radiodifusión profesional.",
         specs: ["Transmisores AM 1 – 10 kW", "Transmisores FM 50 W – 1 kW", "Enlaces estudio–planta", "Procesadores de audio", "Operación continua 24/7"],
-        image: capBroadcast,
-        alt: "Sala de transmisión con racks de transmisores de radiodifusión",
+        image: capBroadcast, alt: "Sala de transmisión con racks de transmisores de radiodifusión",
       },
       {
-        id: "antennas",
-        index: "03",
-        title: "ANTENNAS",
+        id: "antennas", index: "03", title: "ANTENNAS",
         description: "Diseño, fabricación e implementación de antenas.",
         specs: ["Monopolo AM 510 – 1700 kHz", "HF 2 – 30 MHz · 1 kW", "Yagi VHF 134 – 174 MHz", "Antenas MF NAVTEX", "Torres contraventadas galvanizadas"],
-        image: capAntennas,
-        alt: "Torre de telecomunicaciones con arreglo de antenas FM y Yagi VHF",
+        image: capAntennas, alt: "Torre de telecomunicaciones con arreglo de antenas FM y Yagi VHF",
       },
       {
-        id: "transmission-systems",
-        index: "04",
-        title: "TRANSMISSION SYSTEMS",
+        id: "transmission-systems", index: "04", title: "TRANSMISSION SYSTEMS",
         description: "Sistemas de transmisión y distribución.",
         specs: ["Sistemas radiantes completos", "Líneas coaxiales 1/2″ Super Flex · LMR-400", "Acoplamiento y sintonía", "Monitoreo y control remoto", "Integración de planta"],
-        image: capTransmission,
-        alt: "Base aislada de torre AM con línea de alimentación y unidad de sintonía",
+        image: capTransmission, alt: "Base aislada de torre AM con línea de alimentación y unidad de sintonía",
       },
       {
-        id: "critical-communications",
-        index: "05",
-        title: "CRITICAL COMMUNICATIONS",
+        id: "critical-communications", index: "05", title: "CRITICAL COMMUNICATIONS",
         description: "Infraestructura para comunicaciones críticas.",
         specs: ["Sistemas NAVTEX 490 / 518 kHz", "Software de automatización propio", "Seguridad marítima y defensa", "Alarmas y telemetría en tiempo real", "Protecciones integradas"],
-        image: capCritical,
-        alt: "Estación costera de radio con mástil monopolo entre la niebla marina",
+        image: capCritical, alt: "Estación costera de radio con mástil monopolo entre la niebla marina",
       },
     ],
   },
-
   projects: {
     kicker: "04 — Proyectos",
     title: "ENGINEERED PROJECTS",
@@ -191,56 +155,43 @@ const es: SiteContent = {
     labels: { location: "Ubicación", technology: "Tecnología", year: "Año" },
     items: [
       {
-        id: "navtex-mf",
-        index: "01",
-        category: "CRITICAL COMMUNICATIONS",
+        id: "navtex-mf", index: "01", category: "CRITICAL COMMUNICATIONS",
         name: "Sistema NAVTEX 490 / 518 kHz",
         location: "[UBICACIÓN]",
         technology: "Transmisión MF · Sistema radiante · Automatización",
         year: "[AÑO]",
         summary: "Antena MF y transmisión NAVTEX diseñadas para operación confiable en entornos marítimos y de defensa. Unidad de potencia y control, software de automatización y monitoreo remoto.",
-        image: capCritical,
-        alt: "Estación de transmisión NAVTEX en la costa",
+        image: capCritical, alt: "Estación de transmisión NAVTEX en la costa",
       },
       {
-        id: "am-solid-state",
-        index: "02",
-        category: "BROADCAST INFRASTRUCTURE",
+        id: "am-solid-state", index: "02", category: "BROADCAST INFRASTRUCTURE",
         name: "Transmisores AM Serie SENDER SS",
         location: "[UBICACIÓN]",
         technology: "Estado sólido · Clase D · PWM · 1 – 10 kW",
         year: "[AÑO]",
         summary: "Serie de transmisores AM de estado sólido con arquitectura modular, 490 – 1700 kHz, estabilidad ±5 Hz y operación continua 24/7 para banda media.",
-        image: projAm,
-        alt: "Gabinete de transmisor AM de estado sólido",
+        image: projAm, alt: "Gabinete de transmisor AM de estado sólido",
       },
       {
-        id: "stl-links",
-        index: "03",
-        category: "RF SYSTEM",
+        id: "stl-links", index: "03", category: "RF SYSTEM",
         name: "Enlaces Estudio–Planta AM / FM",
         location: "[UBICACIÓN]",
         technology: "STL VHF/UHF · Yagi 134 – 174 MHz · Hasta 10 W",
         year: "[AÑO]",
         summary: "Enlaces STAL-200 y AL-100 con encendido remoto, operación Mono/MPX y antenas Yagi en aluminio 6162 para operación continua en ambientes exigentes.",
-        image: projStl,
-        alt: "Antena Yagi de enlace sobre azotea con vista a Santiago",
+        image: projStl, alt: "Antena Yagi de enlace sobre azotea con vista a Santiago",
       },
       {
-        id: "antenna-systems",
-        index: "04",
-        category: "ANTENNA SYSTEM",
+        id: "antenna-systems", index: "04", category: "ANTENNA SYSTEM",
         name: "Sistemas de Antena AM / HF",
         location: "[UBICACIÓN]",
         technology: "Monopolo AM · HF 2 – 30 MHz · Torres contraventadas",
         year: "[AÑO]",
         summary: "Sistemas monopolo de mayor ancho de banda y eficiencia, con torre aterrizada y protección contra descargas. Antenas HF profesionales de 1 kW.",
-        image: capAntennas,
-        alt: "Torre galvanizada con sistema de antenas",
+        image: capAntennas, alt: "Torre galvanizada con sistema de antenas",
       },
     ],
   },
-
   technology: {
     kicker: "05 — Tecnología",
     title: ["THE TECHNOLOGY", "BEHIND THE SIGNAL"],
@@ -255,7 +206,6 @@ const es: SiteContent = {
     ],
     note: "Rangos según líneas de producto publicadas por Sender.",
   },
-
   process: {
     kicker: "06 — Proceso",
     title: ["FROM IDEA", "TO SIGNAL"],
@@ -268,7 +218,6 @@ const es: SiteContent = {
       { index: "05", title: "SUPPORT", text: "Soporte técnico, monitoreo remoto, mantenimiento preventivo y continuidad operacional." },
     ],
   },
-
   experience: {
     kicker: "07 — Experiencia",
     title: ["PROVEN", "IN THE FIELD"],
@@ -282,7 +231,6 @@ const es: SiteContent = {
     footnote: "Los valores entre corchetes son campos editables pendientes de verificación.",
     reach: ["CHILE", "INTERNATIONAL"],
   },
-
   about: {
     kicker: "08 — Nosotros",
     title: ["ENGINEERING", "WITH PURPOSE"],
@@ -299,18 +247,13 @@ const es: SiteContent = {
     ],
     mission: "Desarrollar tecnología y soluciones en telecomunicaciones adaptadas a las necesidades de cada cliente, aportando innovación y soporte técnico en radiodifusión y sistemas de comunicación.",
   },
-
   contact: {
     kicker: "09 — Contacto",
     title: ["HAVE A SIGNAL", "TO SOLVE?"],
     sub: "Let's engineer it.",
     cta: "Start a project",
     form: {
-      name: "Nombre",
-      company: "Empresa",
-      email: "Email",
-      type: "Tipo de proyecto",
-      message: "Mensaje",
+      name: "Nombre", company: "Empresa", email: "Email", type: "Tipo de proyecto", message: "Mensaje",
       submit: "Enviar solicitud",
       sent: "Solicitud registrada. Te contactaremos en horario laboral.",
       types: ["Radiodifusión AM", "Radiodifusión FM", "Sistema NAVTEX", "Antenas / Torres", "Enlaces STL", "Comunicaciones críticas", "Otro"],
@@ -318,7 +261,6 @@ const es: SiteContent = {
     direct: "Contacto directo",
     whatsapp: "Cotizar por WhatsApp",
   },
-
   footer: {
     tagline: "Engineering the Signal",
     nav: "Navegación",
@@ -331,7 +273,6 @@ const es: SiteContent = {
 
 const en: SiteContent = {
   nav: { solutions: "Solutions", projects: "Projects", technology: "Technology", about: "About", contact: "Contact", cta: "Contact" },
-
   hero: {
     kicker: "RF Engineering · Broadcast · Critical Communications",
     title: ["ENGINEERING", "THE SIGNAL"],
@@ -341,7 +282,6 @@ const en: SiteContent = {
     scroll: "Scroll to explore",
     meta: ["Santiago, Chile", "20+ years", "AM · FM · HF · VHF · UHF · NAVTEX"],
   },
-
   manifesto: {
     title: ["THE SIGNAL", "MUST GO THROUGH."],
     body: [
@@ -349,7 +289,6 @@ const en: SiteContent = {
       "We design and deploy technology built to work where it truly matters.",
     ],
   },
-
   capabilities: {
     kicker: "03 — Capabilities",
     title: "WHAT WE ENGINEER",
@@ -357,53 +296,37 @@ const en: SiteContent = {
     hover: "View area",
     items: [
       {
-        id: "rf-engineering",
-        index: "01",
-        title: "RF ENGINEERING",
+        id: "rf-engineering", index: "01", title: "RF ENGINEERING",
         description: "Engineering and development of RF solutions.",
         specs: ["Class D amplification", "PWM modulation", "RF modules & circuits", "High-power capacitors", "Antenna tuning units (ATU)"],
-        image: capRf,
-        alt: "Solid-state RF amplifier module with transistors and copper coils",
+        image: capRf, alt: "Solid-state RF amplifier module with transistors and copper coils",
       },
       {
-        id: "broadcast",
-        index: "02",
-        title: "BROADCAST",
+        id: "broadcast", index: "02", title: "BROADCAST",
         description: "Solutions for professional broadcasting.",
         specs: ["AM transmitters 1 – 10 kW", "FM transmitters 50 W – 1 kW", "Studio–transmitter links", "Audio processors", "24/7 continuous operation"],
-        image: capBroadcast,
-        alt: "Transmitter hall with broadcast equipment racks",
+        image: capBroadcast, alt: "Transmitter hall with broadcast equipment racks",
       },
       {
-        id: "antennas",
-        index: "03",
-        title: "ANTENNAS",
+        id: "antennas", index: "03", title: "ANTENNAS",
         description: "Design, manufacturing and deployment of antennas.",
         specs: ["AM monopole 510 – 1700 kHz", "HF 2 – 30 MHz · 1 kW", "VHF Yagi 134 – 174 MHz", "MF NAVTEX antennas", "Galvanized guyed towers"],
-        image: capAntennas,
-        alt: "Telecommunications tower with FM array and VHF Yagi antennas",
+        image: capAntennas, alt: "Telecommunications tower with FM array and VHF Yagi antennas",
       },
       {
-        id: "transmission-systems",
-        index: "04",
-        title: "TRANSMISSION SYSTEMS",
+        id: "transmission-systems", index: "04", title: "TRANSMISSION SYSTEMS",
         description: "Transmission and distribution systems.",
         specs: ["Complete radiating systems", "Coax 1/2″ Super Flex · LMR-400", "Matching & tuning", "Remote monitoring & control", "Plant integration"],
-        image: capTransmission,
-        alt: "Insulated AM tower base with feed line and tuning unit",
+        image: capTransmission, alt: "Insulated AM tower base with feed line and tuning unit",
       },
       {
-        id: "critical-communications",
-        index: "05",
-        title: "CRITICAL COMMUNICATIONS",
+        id: "critical-communications", index: "05", title: "CRITICAL COMMUNICATIONS",
         description: "Infrastructure for critical communications.",
         specs: ["NAVTEX systems 490 / 518 kHz", "In-house automation software", "Maritime safety & defense", "Real-time alarms & telemetry", "Integrated protections"],
-        image: capCritical,
-        alt: "Coastal radio station with monopole mast in sea fog",
+        image: capCritical, alt: "Coastal radio station with monopole mast in sea fog",
       },
     ],
   },
-
   projects: {
     kicker: "04 — Projects",
     title: "ENGINEERED PROJECTS",
@@ -412,56 +335,43 @@ const en: SiteContent = {
     labels: { location: "Location", technology: "Technology", year: "Year" },
     items: [
       {
-        id: "navtex-mf",
-        index: "01",
-        category: "CRITICAL COMMUNICATIONS",
+        id: "navtex-mf", index: "01", category: "CRITICAL COMMUNICATIONS",
         name: "NAVTEX System 490 / 518 kHz",
         location: "[LOCATION]",
         technology: "MF transmission · Radiating system · Automation",
         year: "[YEAR]",
         summary: "MF antenna and NAVTEX transmission designed for reliable operation in maritime and defense environments. Power & control unit, automation software and remote monitoring.",
-        image: capCritical,
-        alt: "NAVTEX transmission station on the coast",
+        image: capCritical, alt: "NAVTEX transmission station on the coast",
       },
       {
-        id: "am-solid-state",
-        index: "02",
-        category: "BROADCAST INFRASTRUCTURE",
+        id: "am-solid-state", index: "02", category: "BROADCAST INFRASTRUCTURE",
         name: "AM Transmitters SENDER SS Series",
         location: "[LOCATION]",
         technology: "Solid state · Class D · PWM · 1 – 10 kW",
         year: "[YEAR]",
         summary: "Solid-state AM transmitter series with modular architecture, 490 – 1700 kHz, ±5 Hz stability and 24/7 continuous operation for the medium-wave band.",
-        image: projAm,
-        alt: "Solid-state AM transmitter cabinet",
+        image: projAm, alt: "Solid-state AM transmitter cabinet",
       },
       {
-        id: "stl-links",
-        index: "03",
-        category: "RF SYSTEM",
+        id: "stl-links", index: "03", category: "RF SYSTEM",
         name: "Studio–Transmitter Links AM / FM",
         location: "[LOCATION]",
         technology: "VHF/UHF STL · Yagi 134 – 174 MHz · Up to 10 W",
         year: "[YEAR]",
         summary: "STAL-200 and AL-100 links with remote transmitter start, Mono/MPX operation and 6162 aluminum Yagi antennas for continuous operation in demanding environments.",
-        image: projStl,
-        alt: "Yagi link antenna on a rooftop overlooking Santiago",
+        image: projStl, alt: "Yagi link antenna on a rooftop overlooking Santiago",
       },
       {
-        id: "antenna-systems",
-        index: "04",
-        category: "ANTENNA SYSTEM",
+        id: "antenna-systems", index: "04", category: "ANTENNA SYSTEM",
         name: "AM / HF Antenna Systems",
         location: "[LOCATION]",
         technology: "AM monopole · HF 2 – 30 MHz · Guyed towers",
         year: "[YEAR]",
         summary: "Monopole systems with wider bandwidth and higher efficiency, grounded tower and lightning protection. Professional 1 kW HF antennas.",
-        image: capAntennas,
-        alt: "Galvanized tower with antenna system",
+        image: capAntennas, alt: "Galvanized tower with antenna system",
       },
     ],
   },
-
   technology: {
     kicker: "05 — Technology",
     title: ["THE TECHNOLOGY", "BEHIND THE SIGNAL"],
@@ -476,7 +386,6 @@ const en: SiteContent = {
     ],
     note: "Ranges according to product lines published by Sender.",
   },
-
   process: {
     kicker: "06 — Process",
     title: ["FROM IDEA", "TO SIGNAL"],
@@ -489,7 +398,6 @@ const en: SiteContent = {
       { index: "05", title: "SUPPORT", text: "Technical support, remote monitoring, preventive maintenance and operational continuity." },
     ],
   },
-
   experience: {
     kicker: "07 — Experience",
     title: ["PROVEN", "IN THE FIELD"],
@@ -503,7 +411,6 @@ const en: SiteContent = {
     footnote: "Bracketed values are editable fields pending verification.",
     reach: ["CHILE", "INTERNATIONAL"],
   },
-
   about: {
     kicker: "08 — About",
     title: ["ENGINEERING", "WITH PURPOSE"],
@@ -520,18 +427,13 @@ const en: SiteContent = {
     ],
     mission: "To develop telecommunications technology and solutions tailored to each client, bringing innovation and technical support to broadcasting and communication systems.",
   },
-
   contact: {
     kicker: "09 — Contact",
     title: ["HAVE A SIGNAL", "TO SOLVE?"],
     sub: "Let's engineer it.",
     cta: "Start a project",
     form: {
-      name: "Name",
-      company: "Company",
-      email: "Email",
-      type: "Project type",
-      message: "Message",
+      name: "Name", company: "Company", email: "Email", type: "Project type", message: "Message",
       submit: "Send request",
       sent: "Request received. We will contact you during business hours.",
       types: ["AM Broadcasting", "FM Broadcasting", "NAVTEX System", "Antennas / Towers", "STL Links", "Critical Communications", "Other"],
@@ -539,7 +441,6 @@ const en: SiteContent = {
     direct: "Direct contact",
     whatsapp: "Quote via WhatsApp",
   },
-
   footer: {
     tagline: "Engineering the Signal",
     nav: "Navigation",

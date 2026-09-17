@@ -3,8 +3,8 @@ import { useInView } from "motion/react";
 import { useLang } from "@/i18n/LanguageContext";
 import type { Stat } from "@/data/content";
 import { cn } from "@/utils/cn";
-import { Reveal, RevealLines } from "./ui/Reveal";
-import { Kicker, Section } from "./ui/Primitives";
+import { Reveal, RevealLines } from "@/ui/Reveal";
+import { Kicker, Section } from "@/ui/Primitives";
 
 export function Experience() {
   const { t } = useLang();

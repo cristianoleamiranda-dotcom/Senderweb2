@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useScroll, useSpring } from "motion/react";
 import { useLang } from "@/i18n/LanguageContext";
 import { scrollToId, getLenis } from "@/hooks/useLenis";
 import { cn } from "@/utils/cn";
-import { Arrow } from "./ui/Primitives";
+import { Arrow } from "@/ui/Primitives";
 
 const LINKS = [
   { id: "soluciones", key: "solutions" },

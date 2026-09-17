@@ -3,8 +3,8 @@ import { motion, useScroll, useTransform, type MotionValue } from "motion/react"
 import { useLang } from "@/i18n/LanguageContext";
 import type { Project } from "@/data/content";
 import { scrollToId } from "@/hooks/useLenis";
-import { Reveal, RevealLines } from "./ui/Reveal";
-import { Arrow, Kicker, Section } from "./ui/Primitives";
+import { Reveal, RevealLines } from "@/ui/Reveal";
+import { Arrow, Kicker, Section } from "@/ui/Primitives";
 
 export function Projects() {
   const { t } = useLang();

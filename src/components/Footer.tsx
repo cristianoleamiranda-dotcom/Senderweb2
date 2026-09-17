@@ -1,7 +1,7 @@
 import { useLang } from "@/i18n/LanguageContext";
 import { company } from "@/data/content";
 import { scrollToId } from "@/hooks/useLenis";
-import { Arrow } from "./ui/Primitives";
+import { Arrow } from "@/ui/Primitives";
 
 const LINKS = [
   { id: "soluciones", key: "solutions" },

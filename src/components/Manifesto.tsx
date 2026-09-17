@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useLang } from "@/i18n/LanguageContext";
-import { Reveal, RevealLines } from "./ui/Reveal";
-import { Section } from "./ui/Primitives";
+import { Reveal, RevealLines } from "@/ui/Reveal";
+import { Section } from "@/ui/Primitives";
 
 export function Manifesto() {
   const { t } = useLang();

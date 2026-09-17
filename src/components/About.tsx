@@ -2,8 +2,8 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { useLang } from "@/i18n/LanguageContext";
 import { images } from "@/data/content";
-import { Reveal, RevealImage, RevealLines } from "./ui/Reveal";
-import { Kicker, Section } from "./ui/Primitives";
+import { Reveal, RevealImage, RevealLines } from "@/ui/Reveal";
+import { Kicker, Section } from "@/ui/Primitives";
 
 export function About() {
   const { t } = useLang();
