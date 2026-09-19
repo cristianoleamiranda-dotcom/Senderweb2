@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll, useTransform, AnimatePresence } from "motion/react";
 import { useLang } from "@/i18n/LanguageContext";
 import { cn } from "@/utils/cn";
-import { Reveal, RevealLines } from "./ui/Reveal";
-import { Kicker, Section } from "./ui/Primitives";
+import { Reveal, RevealLines } from "@/ui/Reveal";
+import { Kicker, Section } from "@/ui/Primitives";
 
 /**
  * Log-scale spectrum positions (0..1) for each band, between 100 kHz and 1 GHz.

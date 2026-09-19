@@ -3,8 +3,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useLang } from "@/i18n/LanguageContext";
 import type { Capability } from "@/data/content";
 import { cn } from "@/utils/cn";
-import { Reveal, RevealImage, RevealLines } from "./ui/Reveal";
-import { Arrow, Kicker, Section } from "./ui/Primitives";
+import { Reveal, RevealImage, RevealLines } from "@/ui/Reveal";
+import { Arrow, Kicker, Section } from "@/ui/Primitives";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
