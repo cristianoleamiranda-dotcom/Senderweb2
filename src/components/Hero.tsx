@@ -322,7 +322,7 @@ export function Hero() {
           preload="auto"
           aria-hidden="true"
         >
-          <source src="/assets/sender-hero.mp4" type="video/mp4" />
+          <source src="./assets/sender-hero.mp4" type="video/mp4" />
         </video>
         {/* Hero gradient overlay */}
         <div
