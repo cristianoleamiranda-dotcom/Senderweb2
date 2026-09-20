@@ -1,33 +1,54 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
-import { content, type Lang, type SiteContent } from "@/data/content";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { siteContent, type SiteLanguage, type SiteContent } from "@/content/site";
 
-interface LanguageValue {
-  lang: Lang;
-  setLang: (l: Lang) => void;
+interface LanguageContextValue {
+  lang: SiteLanguage;
+  setLang: (lang: SiteLanguage) => void;
   t: SiteContent;
 }
 
-const LanguageContext = createContext<LanguageValue | null>(null);
+const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>(() => {
-    if (typeof window === "undefined") return "es";
-    const stored = window.localStorage.getItem("sender:lang");
-    return stored === "en" ? "en" : "es";
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const [lang, setLangState] = useState<SiteLanguage>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("sender-lang");
+      if (stored === "es" || stored === "en") return stored;
+      const navLang = navigator.language?.toLowerCase() || "";
+      if (navLang.startsWith("es")) return "es";
+    }
+    return "es";
   });
 
-  const setLang = (l: Lang) => {
-    setLangState(l);
-    window.localStorage.setItem("sender:lang", l);
-    document.documentElement.lang = l;
+  const setLang = (nextLang: SiteLanguage) => {
+    setLangState(nextLang);
+    try {
+      localStorage.setItem("sender-lang", nextLang);
+      document.documentElement.lang = nextLang;
+    } catch {}
   };
 
-  const value = useMemo(() => ({ lang, setLang, t: content[lang] }), [lang]);
-  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  const value: LanguageContextValue = {
+    lang,
+    setLang,
+    t: siteContent[lang] as unknown as SiteContent,
+  };
+
+  return (
+    <LanguageContext.Provider value={value}>
+      {children}
+    </LanguageContext.Provider>
+  );
 }
 
-export function useLang() {
+export function useLang(): LanguageContextValue {
   const ctx = useContext(LanguageContext);
-  if (!ctx) throw new Error("useLang must be used inside LanguageProvider");
+  if (!ctx) {
+    throw new Error("useLang must be used within a LanguageProvider");
+  }
   return ctx;
 }

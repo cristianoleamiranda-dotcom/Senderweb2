@@ -1,318 +1,91 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useLang } from "@/i18n/LanguageContext";
-import { cn } from "@/utils/cn";
-import { scrollToId } from "@/hooks/useLenis";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { useVideoScrub } from "@/hooks/useVideoScrub";
 
-/* ------------------------------------------------------------------ */
-/* Hero cinematográfico con video transport                           */
-/* scroll / touch / keyboard → controlan el video (no el documento)  */
-/* ------------------------------------------------------------------ */
+interface HeroProps {
+  onTransportStateChange?: (state: "armed" | "released") => void;
+}
 
-const NAV_LINKS = [
-  { id: "top",       labelEs: "INICIO",     labelEn: "HOME" },
-  { id: "nosotros",  labelEs: "NOSOTROS",   labelEn: "ABOUT" },
-  { id: "ingenieria", labelEs: "INGENIERÍA", labelEn: "ENGINEERING" },
-  { id: "proyectos", labelEs: "PROYECTOS",  labelEn: "PROJECTS" },
-  { id: "contacto",  labelEs: "CONTACTO",   labelEn: "CONTACT" },
-] as const;
-
-const TICKET_ES = "INGENIERÍA DE LA SEÑAL";
-const TICKET_EN = "ENGINEERING THE SIGNAL";
-
-export function Hero() {
+export function Hero({ onTransportStateChange }: HeroProps) {
   const { t, lang, setLang } = useLang();
+  const reducedMotion = useReducedMotion();
+
+  const heroRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const navWrapRef = useRef<HTMLDivElement>(null);
+  const ctaWrapRef = useRef<HTMLAnchorElement>(null);
   const wordmarkRef = useRef<HTMLHeadingElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
   const chipsRef = useRef<HTMLDivElement>(null);
   const locRef = useRef<HTMLSpanElement>(null);
   const fadeRef = useRef<HTMLDivElement>(null);
-  const navRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
+  const hintRef = useRef<HTMLDivElement>(null);
 
-  const [videoReady, setVideoReady] = useState(false);
+  const [currentTransportState, setCurrentTransportState] = useState<"armed" | "released">("armed");
 
-  const reducedMotion = typeof window !== "undefined"
-    ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    : false;
-
-  // ---- Transport state (refs — no React state para rendimiento) ----
-  const transportRef = useRef<"armed" | "released">("armed");
-  const progressRef = useRef(0);
-  const currentTimeRef = useRef(0);
-  const navInProgressRef = useRef(false);
-  const playbackRateRef = useRef(1);
-  const lastReverseSeekRef = useRef(0);
-  const rafRef = useRef(0);
-  const lastFrameRef = useRef(0);
-  const armedLockRef = useRef(false);
-  const releasePendingRef = useRef(false);
-
-  const easeCubic = (x: number) => x * x * (3 - 2 * x);
-
-  function releaseTransport(video?: HTMLVideoElement) {
-    if (releasePendingRef.current) return;
-    releasePendingRef.current = true;
-    transportRef.current = "released";
-    progressRef.current = 1;
-    armedLockRef.current = true;
-    if (video) {
-      video.play().catch(() => {});
-      try { video.playbackRate = 3; } catch {}
-    }
-    setTimeout(() => {
-      armedLockRef.current = false;
-      if (transportRef.current === "released" && window.scrollY <= 2) {
-        rearmTransport(video);
+  const { navigateToSection } = useVideoScrub({
+    videoRef,
+    containerRef: heroRef,
+    reducedMotion,
+    onStateChange: (st) => {
+      setCurrentTransportState(st);
+      onTransportStateChange?.(st);
+    },
+    onUiUpdate: (_progress, _currentTime, k) => {
+      // Direct DOM updates for maximum 60/120fps performance
+      if (navWrapRef.current) {
+        navWrapRef.current.style.transform = `translateX(${-130 * k}%)`;
+        navWrapRef.current.style.opacity = String(Math.max(0, 1 - k * 1.15));
       }
-    }, 4000);
-  }
-
-  function rearmTransport(video?: HTMLVideoElement) {
-    transportRef.current = "armed";
-    progressRef.current = 0;
-    currentTimeRef.current = 0;
-    if (video) {
-      video.pause();
-      video.currentTime = 0;
-      try { video.playbackRate = 1; } catch {}
-      video.play().catch(() => {});
-    }
-    playbackRateRef.current = 1;
-  }
-
-  function navigateToSection(id: string, e?: React.MouseEvent) {
-    if (e) e.preventDefault();
-    if (transportRef.current !== "armed") {
-      scrollToId(id);
-      return;
-    }
-    navInProgressRef.current = true;
-    transportRef.current = "released";
-    history.replaceState(null, "", `#${id}`);
-    scrollToId(id);
-    setTimeout(() => { navInProgressRef.current = false; }, 1000);
-  }
-
-  function playForward(dt: number, video: HTMLVideoElement) {
-    if (transportRef.current !== "armed") return;
-    if (progressRef.current >= 1) {
-      if (video.currentTime < video.duration - 0.05) {
-        video.currentTime = Math.min(video.duration, video.currentTime + dt * playbackRateRef.current * 0.5);
-        video.play().catch(() => {});
-      } else {
-        releaseTransport(video);
+      if (ctaWrapRef.current) {
+        ctaWrapRef.current.style.transform = `translateX(${160 * k}%)`;
+        ctaWrapRef.current.style.opacity = String(Math.max(0, 1 - k * 1.15));
       }
-      return;
-    }
-    const target = progressRef.current * (video.duration || 0);
-    const diff = target - currentTimeRef.current;
-    const lerp = 1 - Math.exp(-dt * 8);
-    currentTimeRef.current += diff * lerp;
-    video.currentTime = currentTimeRef.current;
-    video.play().catch(() => {});
-    playbackRateRef.current = Math.min(
-      3,
-      playbackRateRef.current + Math.min(0.5, Math.abs(diff) * 0.01)
-    );
-    video.playbackRate = playbackRateRef.current;
-    if (Math.random() < 0.12) {
-      playbackRateRef.current = Math.max(1, playbackRateRef.current - 0.12);
-    }
-  }
-
-  function playReverse(now: number, video: HTMLVideoElement) {
-    if (video.seeking) return;
-    const elapsed = now - lastReverseSeekRef.current;
-    if (elapsed < 1000 / 12) return;
-    lastReverseSeekRef.current = now;
-    const step = 0.08 * Math.max(1, playbackRateRef.current);
-    const newTime = Math.max(0, video.currentTime - step);
-    video.currentTime = newTime;
-    currentTimeRef.current = newTime;
-  }
-
-  function applyUiDisplacement() {
-    const k = easeCubic(Math.min(1, Math.max(0, (currentTimeRef.current - 0.2) / 2.4)));
-    if (navRef.current) navRef.current.style.transform = `translateX(${-130 * k}%)`;
-    if (ctaRef.current) ctaRef.current.style.transform = `translateX(${160 * k}%)`;
-    if (wordmarkRef.current) wordmarkRef.current.style.transform = `translateY(${-300 * k}%)`;
-    if (chipsRef.current) chipsRef.current.style.transform = `translateX(${-140 * k}%)`;
-    if (locRef.current) locRef.current.style.transform = `translateX(${200 * k}%)`;
-    if (fadeRef.current) fadeRef.current.style.opacity = String(1 - k * 1.15);
-  }
-
-  // ---- RAF loop ----
-  useEffect(() => {
-    if (reducedMotion || !videoRef.current) return;
-    let disposed = false;
-    const video = videoRef.current!;
-
-    const loop = (now: number) => {
-      if (disposed) return;
-      const dt = Math.min(0.1, (now - lastFrameRef.current) / 1000);
-      lastFrameRef.current = now;
-
-      if (transportRef.current === "armed") {
-        if (progressRef.current >= 0.999) {
-          releaseTransport(video);
-          rafRef.current = requestAnimationFrame(loop);
-          return;
-        }
-        if (progressRef.current > (currentTimeRef.current / (video.duration || 1))) {
-          playForward(dt, video);
-        } else {
-          playReverse(now, video);
-        }
-        applyUiDisplacement();
-      } else {
-        const videoNow = video.currentTime;
-        const target = video.duration ? progressRef.current * video.duration : 0;
-        const diff = target - videoNow;
-        if (Math.abs(diff) > 0.05) {
-          video.currentTime += diff * (1 - Math.exp(-dt * 8));
-          currentTimeRef.current = video.currentTime;
-        }
-        if (video.currentTime >= video.duration - 0.01) {
-          video.pause();
-          video.currentTime = video.duration;
-        }
-        if (window.scrollY <= 2 && !navInProgressRef.current && !armedLockRef.current) {
-          rearmTransport(video);
-        }
-        applyUiDisplacement();
+      if (wordmarkRef.current) {
+        wordmarkRef.current.style.transform = `translateY(${-300 * k}%)`;
+        wordmarkRef.current.style.opacity = String(Math.max(0, 1 - k * 1.15));
       }
-      if (!disposed) rafRef.current = requestAnimationFrame(loop);
-    };
-
-    video.play().catch(() => {});
-    try { video.currentTime = 0; } catch {}
-
-    rafRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      disposed = true;
-      cancelAnimationFrame(rafRef.current);
-      video.pause();
-    };
-  }, [videoReady]);
-
-  // ---- Wheel listener ----
-  useEffect(() => {
-    if (reducedMotion || !videoRef.current) return;
-    const handleWheel = (e: WheelEvent) => {
-      if (transportRef.current !== "armed" || navInProgressRef.current || armedLockRef.current) return;
-      e.preventDefault();
-      window.scrollTo(0, 0);
-      const delta = Math.abs(e.deltaY) * 0.00045;
-      if (e.deltaY > 0) {
-        progressRef.current = Math.min(1, progressRef.current + delta);
-        const video = videoRef.current!;
-        if (!video.paused) {
-          playbackRateRef.current = Math.min(
-            3,
-            playbackRateRef.current + Math.min(0.5, Math.abs(e.deltaY) * 0.006)
-          );
-          video.playbackRate = playbackRateRef.current;
-        }
-      } else {
-        progressRef.current = Math.max(0, progressRef.current - delta);
+      if (chipsRef.current) {
+        chipsRef.current.style.transform = `translateX(${-140 * k}%)`;
+        chipsRef.current.style.opacity = String(Math.max(0, 1 - k * 1.15));
       }
-      if (progressRef.current >= 0.999) {
-        releaseTransport(videoRef.current!);
+      if (locRef.current) {
+        locRef.current.style.transform = `translateX(${200 * k}%)`;
+        locRef.current.style.opacity = String(Math.max(0, 1 - k * 1.15));
       }
-    };
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    return () => window.removeEventListener("wheel", handleWheel);
-  }, [videoReady]);
+      if (fadeRef.current) {
+        fadeRef.current.style.opacity = String(Math.max(0, 1 - k * 1.15));
+      }
+      if (hintRef.current) {
+        hintRef.current.style.opacity = String(Math.max(0, 1 - k * 2.5));
+      }
+    },
+  });
 
-  // ---- Touch listeners ----
-  useEffect(() => {
-    if (reducedMotion || !videoRef.current) return;
-    const wrap = document.getElementById("hero") ?? document.body;
-    let touchStartY = 0;
-    const handleTouchStart = (e: TouchEvent) => {
-      if (transportRef.current !== "armed" || navInProgressRef.current || armedLockRef.current) return;
-      touchStartY = e.touches[0].clientY;
-    };
-    const handleTouchMove = (e: TouchEvent) => {
-      if (transportRef.current !== "armed") return;
-      const deltaY = touchStartY - e.touches[0].clientY;
-      const delta = Math.abs(deltaY) * 0.00045;
-      if (deltaY > 0) {
-        progressRef.current = Math.min(1, progressRef.current + delta);
-      } else {
-        progressRef.current = Math.max(0, progressRef.current - delta);
-      }
-      touchStartY = e.touches[0].clientY;
-      if (progressRef.current >= 0.999) {
-        releaseTransport(videoRef.current!);
-      }
-    };
-    wrap.addEventListener("touchstart", handleTouchStart, { passive: true });
-    wrap.addEventListener("touchmove", handleTouchMove, { passive: false });
-    return () => {
-      wrap.removeEventListener("touchstart", handleTouchStart);
-      wrap.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, [videoReady]);
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    navigateToSection(id);
+  };
 
-  // ---- Keyboard listener ----
-  useEffect(() => {
-    if (reducedMotion || !videoRef.current) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Tab") return;
-      if (transportRef.current !== "armed" || navInProgressRef.current || armedLockRef.current) return;
-      const step = 0.025;
-      if (e.key === "ArrowDown") {
-        progressRef.current = Math.min(1, progressRef.current + step);
-        e.preventDefault();
-      } else if (e.key === "ArrowUp") {
-        progressRef.current = Math.max(0, progressRef.current - step);
-        e.preventDefault();
-      } else if (e.key === "PageDown") {
-        progressRef.current = Math.min(1, progressRef.current + 0.12);
-        e.preventDefault();
-      } else if (e.key === "PageUp") {
-        progressRef.current = Math.max(0, progressRef.current - 0.12);
-        e.preventDefault();
-      } else if (e.key === " " || e.code === "Space") {
-        progressRef.current = Math.min(1, progressRef.current + 0.12);
-        e.preventDefault();
-      }
-      if (progressRef.current >= 0.999) {
-        releaseTransport(videoRef.current!);
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [videoReady]);
-
-  // ---- Video metadata ----
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    const onMeta = () => {
-      setVideoReady(true);
-      video.removeEventListener("loadedmetadata", onMeta);
-    };
-    video.addEventListener("loadedmetadata", onMeta);
-    if (video.readyState >= 1) setVideoReady(true);
-    return () => video.removeEventListener("loadedmetadata", onMeta);
-  }, []);
-
-  const ticketText = lang === "es" ? TICKET_ES : TICKET_EN;
-  const ctaLabel = lang === "es" ? "Solicitar asesoría" : "Request consultation";
+  const navItems = [
+    { id: "hero", label: t.nav.home },
+    { id: "about", label: t.nav.about },
+    { id: "process", label: t.nav.engineering },
+    { id: "products", label: t.nav.products },
+    { id: "work", label: t.nav.projects },
+    { id: "contact", label: t.nav.contact },
+  ];
 
   return (
     <section
       id="hero"
       ref={heroRef}
-      className="hero container-type-inline-size relative isolate h-[100svh] min-h-[640px] w-full overflow-hidden bg-white"
+      className="hero relative isolate h-[100svh] min-h-[640px] w-full overflow-hidden bg-white select-none"
+      style={{ containerType: "inline-size" }}
       aria-label="SENDER — Engineering the Signal"
     >
-      {/* ===== Video layer ===== */}
-      <div className="hero-video-wrap absolute inset-0 -z-10">
+      {/* ===== Video Background Layer ===== */}
+      <div id="hero-video-wrap" className="absolute inset-0 -z-10 bg-black">
         <video
           ref={videoRef}
           id="hero-video"
@@ -324,163 +97,170 @@ export function Hero() {
         >
           <source src="./assets/sender-hero.mp4" type="video/mp4" />
         </video>
-        {/* Hero gradient overlay */}
+
+        {/* Hero gradient fade according to spec */}
         <div
           ref={fadeRef}
           id="hero-fade"
-          className="absolute inset-0 bg-gradient-to-b from-white via-white/82 via-white/42 to-transparent pointer-events-none"
+          className="absolute inset-0 pointer-events-none transition-opacity"
+          style={{
+            background:
+              "linear-gradient(to bottom, #ffffff 0%, rgba(255,255,255,0.82) 28%, rgba(255,255,255,0.42) 60%, rgba(255,255,255,0) 100%)",
+            opacity: 1,
+          }}
           aria-hidden="true"
-          style={{ opacity: 1 }}
         />
       </div>
 
-      {/* ===== Hero top: nav + lang + CTA ===== */}
-      <div className="hero-top absolute top-0 left-0 right-0 z-20 px-5 sm:px-8 lg:px-12 xl:px-16 py-6 lg:py-8">
-        <nav
-          ref={navRef}
-          id="nav"
-          className="flex items-center justify-between max-w-[1600px] mx-auto"
-          aria-label="Navegación principal"
-        >
-          {/* Brand */}
-          <a
-            href="#top"
-            onClick={(e) => navigateToSection("top", e)}
-            className="group flex items-center gap-3"
-            aria-label="SENDER — inicio"
-          >
-            <span className="relative flex h-2 w-2 items-center justify-center" aria-hidden="true">
-              <span className="absolute h-2 w-2 rounded-full bg-[#1e73be]" />
-              <span className="absolute h-2 w-2 rounded-full bg-[#1e73be] [animation:ping-signal_2.8s_ease-out_infinite]" />
-            </span>
-            <span className="font-semibold tracking-[0.12em] text-[#1e73be] text-lg sm:text-xl">
-              SENDER
-            </span>
-          </a>
-
-          {/* Nav pills */}
-          <ul className="flex items-center gap-1 sm:gap-2">
-            {NAV_LINKS.map((link) => {
-              const isActive = lang === "es"
-                ? (link.labelEs === t.nav.solutions && link.id === "top")
-                : (link.labelEn === t.nav.solutions && link.id === "top");
-              // La nav usa solutions como primer link, lo mostramos como "INICIO/HOME"
-              const displayLabel = lang === "es" ? link.labelEs : link.labelEn;
-              const activeColor = "#1e73be";
-              const inactiveColor = "#494949";
-              return (
-                <li key={link.id}>
-                  <a
-                    href={`#${link.id}`}
-                    onClick={(e) => navigateToSection(link.id, e)}
-                    className={cn(
-                      "relative inline-flex items-center px-3 py-1.5 text-[0.7rem] uppercase tracking-[0.2em] transition-colors",
-                      "focus-visible:outline-2 focus-visible:outline-[#1e73be]",
-                    )}
-                    style={{ color: isActive ? activeColor : inactiveColor }}
-                  >
-                    {displayLabel}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-
-          {/* Right cluster: language + CTA */}
-          <div className="flex items-center gap-4">
-            {/* Language switcher */}
-            <div className="flex items-center gap-1" role="group" aria-label="Idioma / Language">
-              {(["es", "en"] as const).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLang(l)}
-                  aria-pressed={lang === l}
-                  className={cn(
-                    "px-2 py-1 text-[0.68rem] uppercase tracking-[0.2em] transition-colors",
-                    "focus-visible:outline-2 focus-visible:outline-[#1e73be]",
-                    lang === l ? "text-[#1e73be]" : "text-[#494949] hover:text-[#1e73be]",
-                  )}
-                >
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
-
-            {/* CTA */}
-            <div
-              ref={ctaRef}
-              className={cn(
-                "px-4 py-2 border text-[0.7rem] uppercase tracking-[0.2em] transition-colors",
-                "focus-visible:outline-2 focus-visible:outline-[#1e73be]",
-                "border-[#494949] text-[#494949] hover:bg-[#494949] hover:text-white",
-              )}
+      {/* ===== Hero Top Bar: Brand, Navigation Pills, Language Switcher, CTA ===== */}
+      <div className="hero-top absolute top-0 left-0 right-0 z-20 px-4 sm:px-8 lg:px-12 py-5 sm:py-6">
+        <div className="max-w-[1600px] mx-auto flex items-center justify-between gap-4">
+          {/* Brand + Nav pills cluster */}
+          <div ref={navWrapRef} className="flex items-center gap-6 lg:gap-8 transition-transform will-change-transform">
+            <a
+              href="#hero"
+              onClick={(e) => handleNavClick(e, "hero")}
+              className="flex items-center gap-2 group cursor-pointer"
+              aria-label="SENDER"
             >
-              {ctaLabel}
-            </div>
+              <span className="relative flex h-2 w-2 items-center justify-center">
+                <span className="absolute h-2 w-2 rounded-full bg-[#1e73be]" />
+                <span className="absolute h-3 w-3 rounded-full bg-[#1e73be]/40 animate-ping" />
+              </span>
+              <span className="text-lg sm:text-xl font-semibold tracking-[0.14em] text-[#494949] group-hover:text-[#1e73be] transition-colors">
+                SENDER
+              </span>
+            </a>
+
+            {/* Desktop Navigation Pills */}
+            <nav id="nav" className="hidden md:flex items-center gap-1.5" aria-label="Navegación Hero">
+              {navItems.map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={(e) => handleNavClick(e, item.id)}
+                  className="px-3 py-1 rounded-full text-[0.72rem] font-medium tracking-[0.15em] uppercase text-[#494949] hover:text-[#1e73be] hover:bg-[#494949]/5 transition-all"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
           </div>
-        </nav>
+
+          {/* Right cluster: Language switcher + CTA button */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Language Switcher */}
+            <div
+              className="flex items-center gap-1 text-[0.72rem] tracking-[0.18em] uppercase font-medium"
+              role="group"
+              aria-label="Seleccionar idioma"
+            >
+              <button
+                type="button"
+                onClick={() => setLang("es")}
+                className={`px-1.5 py-0.5 transition-colors cursor-pointer ${
+                  lang === "es"
+                    ? "text-[#1e73be] font-bold"
+                    : "text-[#494949]/70 hover:text-[#494949]"
+                }`}
+              >
+                ES
+              </button>
+              <span className="text-[#494949]/30">|</span>
+              <button
+                type="button"
+                onClick={() => setLang("en")}
+                className={`px-1.5 py-0.5 transition-colors cursor-pointer ${
+                  lang === "en"
+                    ? "text-[#1e73be] font-bold"
+                    : "text-[#494949]/70 hover:text-[#494949]"
+                }`}
+              >
+                EN
+              </button>
+            </div>
+
+            {/* CTA Button */}
+            <a
+              ref={ctaWrapRef}
+              href="#contact"
+              onClick={(e) => handleNavClick(e, "contact")}
+              className="inline-flex items-center justify-center px-4 sm:px-5 py-2 rounded-full text-[0.72rem] font-medium tracking-[0.16em] uppercase border border-[#494949] text-[#494949] hover:bg-[#1e73be] hover:border-[#1e73be] hover:text-white transition-all will-change-transform cursor-pointer"
+            >
+              {t.hero.cta}
+            </a>
+          </div>
+        </div>
       </div>
 
-      {/* ===== Ticket / kicker line ===== */}
-      <div className="hero-ticket absolute top-[10vh] left-5 sm:left-8 lg:left-12 xl:left-16 z-20">
-        <span className="label text-[#494949] tracking-[0.2em]">
-          {ticketText}
+      {/* ===== Hero Eyebrow Line ===== */}
+      <div className="absolute top-[13vh] sm:top-[15vh] left-4 sm:left-8 lg:left-12 z-10 pointer-events-none">
+        <span className="text-[0.68rem] sm:text-[0.75rem] uppercase tracking-[0.25em] font-medium text-[#494949]/80">
+          {t.hero.eyebrow}
         </span>
       </div>
 
-      {/* ===== Wordmark SENDER ===== */}
-      <div className="hero-wordmark-wrap absolute inset-0 flex items-center justify-center pointer-events-none px-5 sm:px-8 lg:px-12 xl:px-16">
+      {/* ===== Hero Main Wordmark ===== */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-4">
         <h1
           ref={wordmarkRef}
           id="hero-word"
-          className="font-medium tracking-[-0.055em] whitespace-nowrap text-[#494949] select-none leading-[0.78]"
-          style={{ fontSize: "clamp(4rem, 16cqw, 16rem)" }}
+          className="hero-wordmark font-medium whitespace-nowrap text-[#494949] will-change-transform"
+          style={{
+            fontSize: "clamp(4.2rem, 16cqw, 17rem)",
+            lineHeight: 0.78,
+            letterSpacing: "-0.055em",
+          }}
           aria-label="SENDER"
         >
           SENDER
         </h1>
       </div>
 
-      {/* ===== Hero foot: chips + location ===== */}
-      <div className="hero-foot absolute bottom-0 left-0 right-0 z-20 px-5 sm:px-8 lg:px-12 xl:px-16 py-6 lg:py-8">
-        <div className="flex items-center justify-between max-w-[1600px] mx-auto">
+      {/* ===== Hero Foot: Technical Chips + Location ===== */}
+      <div className="hero-foot absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-8 lg:px-12 py-5 sm:py-6">
+        <div className="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          {/* Pills / Chips */}
           <div
             ref={chipsRef}
             id="chips"
-            className="flex items-center gap-3"
-            aria-label="Áreas de ingeniería"
+            className="flex flex-wrap items-center gap-2 will-change-transform"
+            aria-label="Especialidades técnicas"
           >
-            {["RF ENGINEERING", "BROADCASTING", "TRANSMISSION"].map((chip, i) => (
-              <span
-                key={i}
-                className={cn(
-                  "inline-flex items-center px-3 py-1 text-[0.7rem] uppercase tracking-[0.2em] transition-colors",
-                  "focus-visible:outline-2 focus-visible:outline-[#1e73be]",
-                  i === 0
-                    ? "bg-white text-[#494949] border border-[#494949]"
-                    : "bg-transparent text-white border border-white",
-                )}
-              >
-                {chip}
-              </span>
-            ))}
+            <span className="inline-flex items-center px-3.5 py-1 rounded-full text-[0.68rem] tracking-[0.18em] uppercase font-medium bg-white text-[#494949] border border-white shadow-sm">
+              RF ENGINEERING
+            </span>
+            <span className="inline-flex items-center px-3.5 py-1 rounded-full text-[0.68rem] tracking-[0.18em] uppercase font-medium bg-black/25 backdrop-blur-sm text-white border border-white/60">
+              BROADCASTING
+            </span>
+            <span className="inline-flex items-center px-3.5 py-1 rounded-full text-[0.68rem] tracking-[0.18em] uppercase font-medium bg-black/25 backdrop-blur-sm text-white border border-white/60">
+              TRANSMISSION
+            </span>
           </div>
-          <span
-            ref={locRef}
-            id="loc"
-            className="text-[0.7rem] uppercase tracking-[0.2em] text-white"
-          >
-            CHILE · LATAM
-          </span>
+
+          {/* Location */}
+          <div ref={locRef} className="will-change-transform">
+            <span
+              id="loc"
+              className="text-[0.72rem] tracking-[0.24em] uppercase font-medium text-white drop-shadow-sm"
+            >
+              {t.hero.location}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* ===== Mobile scroll hint (only when armed) ===== */}
-      {typeof window !== "undefined" && transportRef.current === "armed" && window.scrollY <= 2 && (
-        <p className="label absolute bottom-20 left-5 sm:hidden text-white/60">
-          Scroll para controlar el video →
-        </p>
+      {/* ===== Interactive Hint (visible when armed) ===== */}
+      {currentTransportState === "armed" && !reducedMotion && (
+        <div
+          ref={hintRef}
+          className="absolute bottom-16 sm:bottom-20 left-4 sm:left-8 lg:left-12 z-20 pointer-events-none transition-opacity"
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/30 backdrop-blur-sm border border-white/20 text-white/90 text-[0.65rem] tracking-[0.18em] uppercase">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#0085b2] animate-pulse" />
+            {t.hero.hint}
+          </div>
+        </div>
       )}
     </section>
   );

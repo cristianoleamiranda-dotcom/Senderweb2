@@ -1,43 +1,44 @@
+import React from "react";
 import { LanguageProvider } from "@/i18n/LanguageContext";
-import { useLenis } from "@/hooks/useLenis";
-import { Nav } from "@/components/Nav";
+import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
-import { Manifesto } from "@/components/Manifesto";
-import { Capabilities } from "@/components/Capabilities";
-import { Projects } from "@/components/Projects";
-import { Technology } from "@/components/Technology";
-import { Process } from "@/components/Process";
-import { Experience } from "@/components/Experience";
-import { About } from "@/components/About";
-import { Contact } from "@/components/Contact";
-import { Footer } from "@/components/Footer";
+import { About } from "@/sections/About";
+import { Process } from "@/sections/Process";
+import { Products } from "@/sections/Products";
+import { Work } from "@/sections/Work";
+import { Quote } from "@/sections/Quote";
+import { Contact } from "@/sections/Contact";
+import { Footer } from "@/sections/Footer";
 
-/**
- * Narrative order:
- * SIGNAL → ENGINEERING → TECHNOLOGY → PROJECTS → EXPERIENCE → SENDER → CONTACT
- */
 function Site() {
-  useLenis();
   return (
-    <div className="relative grain min-h-screen bg-ink text-paper">
-      <a
-        href="#manifiesto"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-paper focus:px-4 focus:py-2 focus:text-ink"
-      >
-        Saltar al contenido
-      </a>
-      <Nav />
+    <div className="relative min-h-screen bg-white text-[#494949] antialiased">
+      {/* Sticky top navbar (only displays when scrolled past the hero) */}
+      <Navbar />
+
       <main>
+        {/* Section 1: Hero with scroll-driven video transport */}
         <Hero />
-        <Manifesto />
-        <Capabilities />
-        <Projects />
-        <Technology />
-        <Process />
-        <Experience />
+
+        {/* Section 2: Nosotros / About */}
         <About />
+
+        {/* Section 3: Ingeniería / Process */}
+        <Process />
+
+        {/* Section 4: Productos / Products */}
+        <Products />
+
+        {/* Section 5: Proyectos / Work */}
+        <Work />
+
+        {/* Section 6: Desafío técnico / Quote */}
+        <Quote />
+
+        {/* Section 7: Contacto / Contact */}
         <Contact />
       </main>
+
       <Footer />
     </div>
   );

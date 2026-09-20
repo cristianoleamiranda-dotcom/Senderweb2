@@ -1,128 +1,67 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #080909;
-  --color-graphite: #111315;
-  --color-slate: #17191b;
-  --color-line: #232628;
-  --color-mist: #8a9096;
-  --color-paper: #f5f5f5;
-  --color-signal: #1e73be;
-  --color-signal-soft: #5c95ce;
+  --color-brand-white: #ffffff;
+  --color-brand-blue: #1e73be;
+  --color-brand-gray: #494949;
+  --color-brand-cyan: #0085b2;
 
-  --font-sans: "Space Grotesk", "Sora", "Inter", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @layer base {
   html {
-    background: var(--color-ink);
-    color: var(--color-paper);
-    scroll-behavior: auto;
+    background-color: #ffffff;
+    color: #494949;
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  html.lenis,
-  html.lenis body {
-    height: auto;
-  }
-  .lenis.lenis-smooth {
-    scroll-behavior: auto !important;
-  }
-  .lenis.lenis-stopped {
-    overflow: hidden;
-  }
+
   body {
-    font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv11";
+    margin: 0;
+    padding: 0;
     overflow-x: hidden;
+    font-family: var(--font-sans);
+    color: #494949;
+    background: #ffffff;
   }
+
   ::selection {
-    background: var(--color-signal);
-    color: var(--color-paper);
+    background: #1e73be;
+    color: #ffffff;
   }
+
   :focus-visible {
-    outline: 1px solid var(--color-signal-soft);
-    outline-offset: 4px;
-  }
-  img {
-    display: block;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      transition-duration: 0.01ms !important;
-    }
+    outline: 2px solid #1e73be;
+    outline-offset: 3px;
   }
 }
 
 @layer utilities {
-  .mono {
-    font-family: var(--font-mono);
-    font-feature-settings: "zero", "ss02";
-    letter-spacing: 0.06em;
+  .hero {
+    container-type: inline-size;
   }
-  .display {
+
+  .hero-wordmark {
+    font-size: clamp(4rem, 16cqw, 17rem);
+    line-height: 0.78;
+    letter-spacing: -0.055em;
     font-weight: 500;
-    letter-spacing: -0.035em;
-    line-height: 0.92;
+    white-space: nowrap;
+    color: #494949;
   }
-  .label {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-mist);
-  }
-  .hairline {
-    background: linear-gradient(90deg, var(--color-line), transparent);
-    height: 1px;
-  }
-  .grain::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.045;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-  .link-line {
-    position: relative;
-  }
-  .link-line::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    height: 1px;
-    width: 100%;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.5s var(--ease-out-expo);
-  }
-  .link-line:hover::after,
-  .link-line:focus-visible::after {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-  .clip-reveal {
-    clip-path: inset(0 0 0 0);
-  }
-  .text-balance {
-    text-wrap: balance;
-  }
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    scrollbar-width: none;
+
+  .hero-fade {
+    background: linear-gradient(
+      to bottom,
+      #ffffff 0%,
+      rgba(255, 255, 255, 0.82) 28%,
+      rgba(255, 255, 255, 0.42) 60%,
+      rgba(255, 255, 255, 0) 100%
+    );
   }
 }
 
@@ -134,21 +73,5 @@
   100% {
     transform: scale(2.6);
     opacity: 0;
-  }
-}
-@keyframes drift {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-2%, 0, 0);
-  }
-}
-@keyframes scan {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(100%);
   }
 }
