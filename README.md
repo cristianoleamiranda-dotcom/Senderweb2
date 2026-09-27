@@ -1,24 +1,47 @@
-SENDER — Engineering the Signal
-Sitio web corporativo y landing page técnica interactiva para SENDER Chile — Especialistas en ingeniería RF, radiodifusión y comunicaciones críticas.
+name: Deploy to GitHub Pages
 
-Características
-Hero Cinematográfico Interactivo: Control por transporte de video scrub reactivo al scroll, touch y teclado (sender-hero.mp4).
-Arquitectura: React 19 + TypeScript + Vite 7 + Tailwind CSS v4.
-Motion & Scroll: Integración de Lenis y Motion para animaciones de entrada fluida y reveal.
-Bilingüe: Soporte completo en Español (ES) e Inglés (EN).
-Despliegue Continuo: GitHub Actions hacia GitHub Pages automatizado con cada push a main.
-URLs de Despliegue
-GitHub Pages: https://cristianoleamiranda-dotcom.github.io/sender/
-Dominio Corporativo: https://www.sender.cl/
-Desarrollo Local
-# Instalar dependencias
-npm ci
+on:
+  push:
+    branches: ['main', 'arena/01a0afb6-sender']
+  workflow_dispatch:
 
-# Servidor de desarrollo
-npm run dev
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-# Compilar para producción
-npm run build
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
 
-# Previsualizar build de producción
-npm run preview
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
